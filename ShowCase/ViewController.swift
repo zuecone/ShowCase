@@ -7,8 +7,23 @@
 //
 
 import UIKit
+import FBSDKLoginKit
+import FBSDKCoreKit
+
 
 class ViewController: UIViewController {
+    
+    @IBAction func fbBtnPressed(sender: UIButton!){
+        let facebookLogin = FBSDKLoginManager()
+        facebookLogin.logInWithReadPermissions(["email"]) { (facebookResults: FBSDKLoginManagerLoginResult!, facebookError: NSError!) in
+            if facebookError != nil{
+                print("Facebook login failed \(facebookError)")
+            }else{
+                let accessToken = FBSDKAccessToken.currentAccessToken().tokenString
+                print("Successfully logged in with facebook. \(accessToken)")
+            }
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
