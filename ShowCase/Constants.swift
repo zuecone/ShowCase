@@ -16,3 +16,10 @@ let KEY_UID = "uid"
 
 //Segues
 let SEGUE_LOGGED_IN = "loggedIn"
+
+//Status codes
+let STATUS_ACCOUNT_NON_EXIST = 17011
+let STATUS_ACCOUNT_WRONG_PASSWORD = 17009
+
+
+//Code=17011 "There is no user record corresponding to this identifier. The user may have been deleted."
