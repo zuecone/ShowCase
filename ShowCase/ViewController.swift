@@ -9,19 +9,43 @@
 import UIKit
 import FBSDKLoginKit
 import FBSDKCoreKit
+import FirebaseAuth
 
 
 class ViewController: UIViewController {
     
+    
     @IBAction func fbBtnPressed(sender: UIButton!){
         let facebookLogin = FBSDKLoginManager()
+        
         facebookLogin.logInWithReadPermissions(["email"]) { (facebookResults: FBSDKLoginManagerLoginResult!, facebookError: NSError!) in
             if facebookError != nil{
                 print("Facebook login failed \(facebookError)")
             }else{
                 let accessToken = FBSDKAccessToken.currentAccessToken().tokenString
                 print("Successfully logged in with facebook. \(accessToken)")
+
+                let credential = FIRFacebookAuthProvider.credentialWithAccessToken(accessToken)
+                
+                
+                DataService.ds.REF_BASE.signInWithCredential(credential, completion: { (authData:FIRUser?, error: NSError?) in
+                    if error != nil {
+                        print("Login failed. \(error)")
+                    } else {
+                        //print("Logged in!")
+                        NSUserDefaults.standardUserDefaults().setValue(authData?.uid, forKey: KEY_UID)
+                        self.performSegueWithIdentifier(SEGUE_LOGGED_IN, sender: nil)
+                    }
+                })
             }
+        }
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID)   != nil{
+            self.performSegueWithIdentifier(SEGUE_LOGGED_IN, sender: nil)
         }
     }
 
@@ -29,12 +53,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
 
 }
 
