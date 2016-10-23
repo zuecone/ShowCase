@@ -60,6 +60,7 @@ class ViewController: UIViewController {
                             }else{
                                 //save the new users UID to the NSUserDefaults.
                                 NSUserDefaults.standardUserDefaults().setValue(result?.uid, forKey: KEY_UID)
+                                print(result?.uid)
                                 DataService.ds.REF_BASE.signInWithEmail(email, password: pwd, completion: nil)
                                 self.performSegueWithIdentifier(SEGUE_LOGGED_IN, sender: nil)
                                 
