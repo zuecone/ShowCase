@@ -20,6 +20,9 @@ class ViewController: UIViewController {
     @IBAction func fbBtnPressed(sender: UIButton!){
         let facebookLogin = FBSDKLoginManager()
         
+  //      DataService.ds.REF_POSTS.database.reference()
+        
+        
         facebookLogin.logInWithReadPermissions(["email"]) { (facebookResults: FBSDKLoginManagerLoginResult!, facebookError: NSError!) in
             if facebookError != nil{
                 print("Facebook login failed \(facebookError)")
@@ -29,16 +32,25 @@ class ViewController: UIViewController {
 
                 let credential = FIRFacebookAuthProvider.credentialWithAccessToken(accessToken)
                 
-                
-                DataService.ds.REF_BASE.signInWithCredential(credential, completion: { (authData:FIRUser?, error: NSError?) in
+                DataService.ds.REF_BASE.signInWithCredential(credential) { authData, error in
                     if error != nil {
                         print("Login failed. \(error)")
                     } else {
-                        //print("Logged in!")
-                        NSUserDefaults.standardUserDefaults().setValue(authData?.uid, forKey: KEY_UID)
-                        self.performSegueWithIdentifier(SEGUE_LOGGED_IN, sender: nil)
+                        print("Logged in!")
                     }
-                })
+
+                    let userDet = ["provider": "facebook","blah": "test"]
+                    let uidVal = authData?.uid
+                    DataService.ds.createFirebaseUser(uidVal!, user: userDet)
+
+//                    print(authData?.uid)
+//                    print(authData?.providerID)
+//                    print(authData?.providerData)
+                    NSUserDefaults.standardUserDefaults().setValue(uidVal, forKey: KEY_UID)
+                    self.performSegueWithIdentifier(SEGUE_LOGGED_IN, sender: nil)
+
+                    
+                }
             }
         }
     }
@@ -54,14 +66,19 @@ class ViewController: UIViewController {
                     if error?.code == STATUS_ACCOUNT_NON_EXIST{
                         //now create account if user doesn't exist.
                         DataService.ds.REF_BASE.createUserWithEmail(email, password: pwd, completion: { (result:FIRUser?, error:NSError?) in
-                            
                             if error != nil {
                                 self.showErrorAlert("Could not create account", msg: "Problem creating account.  Try again")
                             }else{
+                                
+                                
                                 //save the new users UID to the NSUserDefaults.
                                 NSUserDefaults.standardUserDefaults().setValue(result?.uid, forKey: KEY_UID)
                                 print(result?.uid)
                                 DataService.ds.REF_BASE.signInWithEmail(email, password: pwd, completion: nil)
+                                let userDet = ["provider": "email","blah": "emailtest"]
+                                let uidVal = result?.uid
+                                DataService.ds.createFirebaseUser(uidVal!, user: userDet)
+
                                 self.performSegueWithIdentifier(SEGUE_LOGGED_IN, sender: nil)
                                 
                             }
@@ -101,6 +118,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        
     }
 
 }
