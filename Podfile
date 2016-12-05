@@ -9,6 +9,7 @@ target 'ShowCase' do
   pod 'Firebase/Core'
   pod 'FBSDKLoginKit'
   
+  pod 'Alamofire', '3.0'
   
   pod 'Firebase/AdMob'
   pod 'Firebase/Messaging'
