@@ -9,10 +9,16 @@
 import UIKit
 import Firebase
 
-class FeedVC: UIViewController, UITableViewDelegate,UITableViewDataSource {
+class FeedVC: UIViewController, UITableViewDelegate,UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var postField: MaterialTextField!
+    @IBOutlet weak var imageSelectorImg: UIImageView!
+
+    
     var posts = [Post]()
+    
+    var imagePicker: UIImagePickerController!
     
     
     override func viewDidLoad() {
@@ -20,6 +26,9 @@ class FeedVC: UIViewController, UITableViewDelegate,UITableViewDataSource {
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
         
         DataService.ds.REF_POSTS.observeEventType(.Value, withBlock: {snapshot in
 //            print(snapshot.value)
@@ -59,12 +68,24 @@ class FeedVC: UIViewController, UITableViewDelegate,UITableViewDataSource {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let post = posts[indexPath.row]
+        print(post.imageURL)
+        print(post.likes)
         print(post.postDescription)
+
         
         return tableView.dequeueReusableCellWithIdentifier("PostCell") as! PostCell
     }
     
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
+        imagePicker.dismissViewControllerAnimated(true, completion: nil)
+        imageSelectorImg.image = image
+    }
     
+    @IBAction func selectImage(sender: UITapGestureRecognizer) {
+        presentViewController(imagePicker, animated: true, completion: nil)
+    }
    
+    @IBAction func makePost(sender: AnyObject) {
+    }
    
 }

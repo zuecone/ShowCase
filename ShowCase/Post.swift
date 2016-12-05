@@ -49,7 +49,7 @@ class Post {
             self._likes = likes
         }
         
-        if let imageURL = dictionary["imageUrl"] as? String {
+        if let imageURL = dictionary["imageURL"] as? String {
             self._imageURL = imageURL
         }
         
